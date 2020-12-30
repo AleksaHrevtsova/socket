@@ -14,19 +14,21 @@ const users = {};
 
 // Send from server to client
 io.on("connection", (socket) => {
+  // console.log(socket);
   console.log("New user connected");
+  console.log(`Hello`);
 
-  socket.on("user/joinChat", (userName) => {
-    console.log(`new user ${userName} connected`);
-    users[socket.id] = userName;
+  // подключение нового пользователя
+  socket.on("user/joinChat", (name) => {
+    console.log(`new user ${name} connected`);
+    users[socket.id] = name;
+
     // to new user
-    socket.emit("user/joinChatSuccess", `${userName} - welcome to our chat`);
+    socket.emit("user/joinChatSuccess", `${name} - welcome to our chat`);
     socket.emit("user/connected", history);
+    console.log(`history`, history, name);
     // to all another users
-    socket.broadcast.emit(
-      "chat/userJoined",
-      `${userName} connected to the chat`,
-    );
+    socket.broadcast.emit("chat/userJoined", `${name} connected to the chat`);
   });
 
   socket.on("chat/newMessage", (msg) => {
@@ -40,8 +42,8 @@ io.on("connection", (socket) => {
     io.emit("chat/newMessage", entry);
   });
 
-  socket.on("disconnect", () => {
-    console.log(`User left the chat`);
+  socket.on("disconnect", (msg) => {
+    console.log(msg);
   });
 });
 
